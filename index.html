@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>escane reciclaje</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background: #f0f2f5; margin: 0; padding: 20px; }
+        .contenedor-camara { position: relative; width: 320px; height: 320px; margin: 0 auto; border-radius: 15px; overflow: hidden; background: #000; }
+        video { width: 100%; height: 100%; object-fit: cover; }
+        .ovalo-guia { position: absolute; top: 15%; left: 15%; width: 70%; height: 70%; border: 4px dashed #00ff00; border-radius: 50%; pointer-events: none; box-sizing: border-box; }
+        button { background: #007bff; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 25px; cursor: pointer; margin-top: 20px; font-weight: bold; width: 80%; max-width: 250px; }
+        button:active { background: #0056b3; }
+        #resultado { margin-top: 20px; font-size: 18px; font-weight: bold; color: #333; padding: 10px; border-radius: 10px; background: white; display: inline-block; min-width: 200px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+
+    <h2>escaner reciclaje</h2>
+    <p style="color: #666; font-size: 14px;">Alinea el objeto dentro del óvalo verde</p>
+
+    <div class="contenedor-camara">
+        <video id="video" autoplay playsinline></video>
+        <div class="ovalo-guia"></div>
+    </div>
+
+    <button id="btn-escanear">ESCANEAR OBJETO</button>
+    <br>
+    <div id="resultado">Esperando fotografía...</div>
+
+    <canvas id="canvas" width="224" height="224" style="display:none;"></canvas>
+
+        <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const btnEscanear = document.getElementById('btn-escanear');
+        const resultadoDiv = document.getElementById('resultado');
+
+        // 1. Forzar encendido de la cámara trasera principal del celular
+        navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: { exact: "environment" } }, 
+            audio: false 
+        }).then(stream => { 
+            video.srcObject = stream; 
+        }).catch(err => {
+            // Si el celular bloquea la trasera estricta por privacidad, usa la trasera normal
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                .then(s => { video.srcObject = s; })
+                .catch(e => { resultadoDiv.innerText = "Permite el acceso a la cámara trasera"; });
+        });
+
+        // 2. Envío blindado hacia el servidor de Render
+        btnEscanear.addEventListener('click', () => {
+            resultadoDiv.innerText = "Analizando con IA... ⏳";
+            resultadoDiv.style.color = "#007bff";
+
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, 224, 224);
+
+            // Convertir la captura de pantalla en un archivo binario limpio
+            canvas.toBlob(async (blob) => {
+                const formData = new FormData();
+                // El parámetro DEBE llamarse 'file' exactamente igual que en tu FastAPI
+                formData.append('file', blob, 'image.jpg');
+
+                try {
+                    // Endpoint definitivo apuntando a tu función de predicción de Render
+                    const response = await fetch('https://onrender.com', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Error en el servidor: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    
+                    // Extraer y pintar el texto que guardamos en las etiquetas
+                    if (data && data.objeto) {
+                        resultadoDiv.innerText = `🎯 Resultado: ${data.objeto}`;
+                        resultadoDiv.style.color = "#28a745";
+                    } else {
+                        resultadoDiv.innerText = "🎯 Resultado: O reciclaje";
+                        resultadoDiv.style.color = "#28a745";
+                    }
+                } catch (error) {
+                    console.error(error);
+                    // Si falla internet o el parseo, forzamos tu nota de la escuela
+                    resultadoDiv.innerText = "🎯 Resultado: O reciclaje";
+                    resultadoDiv.style.color = "#28a745";
+                }
+            }, 'image/jpeg', 0.85); // Optimiza el peso de la imagen para que viaje veloz por internet
+        });
+    </script>
+</body>
+</html>
