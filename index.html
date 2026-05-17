@@ -36,17 +36,16 @@
         const btnEscanear = document.getElementById('btn-escanear');
         const resultadoDiv = document.getElementById('resultado');
 
-        // 1. Forzar encendido de la cámara trasera principal del celular
+               // 1. Forzar encendido de la cámara trasera de forma flexible (Compatible con Android e iOS)
         navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: { exact: "environment" } }, 
+            video: { facingMode: "environment" }, 
             audio: false 
         }).then(stream => { 
             video.srcObject = stream; 
         }).catch(err => {
-            // Si el celular bloquea la trasera estricta por privacidad, usa la trasera normal
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+            navigator.mediaDevices.getUserMedia({ video: true })
                 .then(s => { video.srcObject = s; })
-                .catch(e => { resultadoDiv.innerText = "Permite el acceso a la cámara trasera"; });
+                .catch(e => { resultadoDiv.innerText = "Por favor, otorga permisos de cámara en tu celular"; });
         });
 
         // 2. Envío blindado hacia el servidor de Render
