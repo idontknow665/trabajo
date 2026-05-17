@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>escaner reciclaje</title>
+    <title>Escaner reciclaje</title>
     <script src="https://thunkable.github.io/webviewer-extension/thunkableWebviewerExtension.js"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; background: #f0f2f5; margin: 0; padding: 20px; }
@@ -18,7 +18,7 @@
 <body>
 
     <h2>escaner reciclaje</h2>
-    <p style="color: #666; font-size: 14px;">Debes mostrar un contendor de reciclaje dentro del círcilo verde</p>
+    <p style="color: #666; font-size: 14px;">Debes mostrar un contendor de reciclaje dentro del círculo verde</p>
 
     <div class="contenedor-camara">
         <video id="video" autoplay playsinline></video>
@@ -77,20 +77,21 @@
                     
                     // Extraer y pintar el texto que guardamos en las etiquetas
                     if (data && data.objeto) {
-                        resultadoDiv.innerText = `Resultado: ${data.objeto}`;
+                        resultadoDiv.innerText = `${data.objeto};
                         resultadoDiv.style.color = "#28a745";
                         
                         ThunkableWebviewerExtension.postMessage(data.objeto);
                         
                     } else {
-                        resultadoDiv.innerText = "Resultado: objeto invalido";
+                        resultadoDiv.innerText = "objeto invalido";
                         resultadoDiv.style.color = "#28a745";
+                        ThunkableWebviewerExtension.postMessage("invalido");
                     }
                 } catch (error) {
                     console.error(error);
-                    // Si falla internet o el parseo, forzamos tu nota de la escuela
-                    resultadoDiv.innerText = "Resultado: objeto invalido";
+                    resultadoDiv.innerText = "Error";
                     resultadoDiv.style.color = "#28a745";
+                    ThunkableWebviewerExtension.postMessage("error");
                 }
             }, 'image/jpeg', 0.85); // Optimiza el peso de la imagen para que viaje veloz por internet
         });
