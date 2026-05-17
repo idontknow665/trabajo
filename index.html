@@ -83,13 +83,13 @@
                         ThunkableWebviewerExtension.postMessage(data.objeto);
                         
                     } else {
-                        resultadoDiv.innerText = `Objeto invalido`;
+                        resultadoDiv.innerText = "Objeto invalido";
                         resultadoDiv.style.color = "#28a745";
                         ThunkableWebviewerExtension.postMessage("invalido");
                     }
                 } catch (error) {
                     console.error(error);
-                    resultadoDiv.innerText = `Error`;
+                    resultadoDiv.innerText = "Error";
                     resultadoDiv.style.color = "#28a745";
                     ThunkableWebviewerExtension.postMessage("error");
                 }
