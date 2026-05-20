@@ -10,8 +10,8 @@
         .contenedor-camara { position: relative; width: 320px; height: 320px; margin: 0 auto; border-radius: 15px; overflow: hidden; background: #000; }
         video { width: 100%; height: 100%; object-fit: cover; }
         .ovalo-guia { position: absolute; top: 15%; left: 15%; width: 70%; height: 70%; border: 4px dashed #d6fffd; border-radius: 50%; pointer-events: none; box-sizing: border-box; }
-        button { background: #d6fffd; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 25px; cursor: pointer; margin-top: 20px; font-weight: bold; width: 80%; max-width: 250px; }
-        button:active { background: #0056b3; }
+        button { background: ##a0e0fc; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 25px; cursor: pointer; margin-top: 20px; font-weight: bold; width: 80%; max-width: 250px; }
+        button:active { background: ##a0e0fc; }
         #resultado { margin-top: 20px; font-size: 18px; font-weight: bold; color: #333; padding: 10px; border-radius: 10px; background: white; display: inline-block; min-width: 200px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     </style>
 </head>
@@ -73,19 +73,18 @@
                     
                     if (data && data.objeto) {
                         resultadoDiv.innerText = `${data.objeto}`;
-                        resultadoDiv.style.color = "#28a745";
-                        
+                        resultadoDiv.style.color = "#080808";
                         ThunkableWebviewerExtension.postMessage(data.objeto);
                         
                     } else {
                         resultadoDiv.innerText = "Objeto invalido";
-                        resultadoDiv.style.color = "#28a745";
+                        resultadoDiv.style.color = "#080808";
                         ThunkableWebviewerExtension.postMessage("invalido");
                     }
                 } catch (error) {
                     console.error(error);
                     resultadoDiv.innerText = "Error";
-                    resultadoDiv.style.color = "#28a745";
+                    resultadoDiv.style.color = "#080808";
                     ThunkableWebviewerExtension.postMessage("error");
                 }
             }, 'image/jpeg', 0.85); 
