@@ -17,7 +17,7 @@
 </head>
 <body>
 
-    <h2>escaner reciclaje</h2>
+    <h2>Escaner reciclaje</h2>
     <p style="color: #666; font-size: 14px;">Debes mostrar un contendor de reciclaje dentro del círculo verde</p>
 
     <div class="contenedor-camara">
@@ -48,7 +48,6 @@
                 .catch(e => { resultadoDiv.innerText = "Por favor, otorga permisos de cámara en tu celular"; });
         });
 
-        // 2. Envío blindado hacia el servidor de Render
         btnEscanear.addEventListener('click', () => {
             resultadoDiv.innerText = "Analizando";
             resultadoDiv.style.color = "#007bff";
@@ -56,14 +55,11 @@
             const context = canvas.getContext('2d');
             context.drawImage(video, 0, 0, 224, 224);
 
-            // Convertir la captura de pantalla en un archivo binario limpio
             canvas.toBlob(async (blob) => {
                 const formData = new FormData();
-                // El parámetro DEBE llamarse 'file' exactamente igual que en tu FastAPI
                 formData.append('file', blob, 'image.jpg');
 
                 try {
-                    // Endpoint definitivo apuntando a tu función de predicción de Render
                     const response = await fetch('https://sproutown.onrender.com/predict', {
                         method: 'POST',
                         body: formData
@@ -75,7 +71,6 @@
 
                     const data = await response.json();
                     
-                    // Extraer y pintar el texto que guardamos en las etiquetas
                     if (data && data.objeto) {
                         resultadoDiv.innerText = `${data.objeto}`;
                         resultadoDiv.style.color = "#28a745";
@@ -93,7 +88,7 @@
                     resultadoDiv.style.color = "#28a745";
                     ThunkableWebviewerExtension.postMessage("error");
                 }
-            }, 'image/jpeg', 0.85); // Optimiza el peso de la imagen para que viaje veloz por internet
+            }, 'image/jpeg', 0.85); 
         });
     </script>
 </body>
